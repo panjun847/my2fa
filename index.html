@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <style>
+      #key{width:200px;height:25px;padding:2px 10px; border: 1px solid #ccc;}
+      #result{width:200px;height:30px;font-size:30px;line-height:30px; margin:30px 0;text-align:center;}
+    </style>
+  </head>
+  <body>
+    <div>
+      <label>请输入Key</label>
+      <form action="#">
+        <input type="text" id="key" name="key" autocomplete="off">
+        <br>
+        <input type="checkbox" name="auto" checked/>自动更新
+      </form>
+    </div>
+    <div id="result">
+      
+    </div>
+  </body>
+<html>
+<script>
+function getCode(key,auto){
+  var xhr=new XMLHttpRequest();
+  xhr.onreadystatechange=function(){
+    if( xhr.readyState==4 && xhr.status==200){
+      insertCode( JSON.parse(xhr.responseText) );
+    }
+  }
+  xhr.open('POST',"2fa.php",false);
+  xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded');
+  xhr.send("key="+key);
+  auto &&  (window._tc=setTimeout(function(){getCode(key,auto)},2000))
+}
+function insertCode(res){
+  var resel=document.getElementById("result");
+  resel.innerHTML=res.otp;
+}
+var form=document.forms[0];
+var keyel=form["key"];
+form.onsubmit=function(e){
+  e=e || window.event;
+  if( (keyel.value+"").trim().length >15 ){
+    clearTimeout(window._tc)
+    getCode(keyel.value,form['auto'].checked);
+  }
+  setTimeout
+  e.returnValue=false;
+  e.preventDefault && e.preventDefault();
+}
+</script>
